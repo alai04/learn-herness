@@ -1,5 +1,7 @@
 import subprocess
+from typing import Iterable
 import anthropic
+from anthropic.types.tool_param import ToolParam
 import dotenv
 import os
 
@@ -23,7 +25,7 @@ SYSTEM = (
 )
 
 # -- Tool definition: just bash --
-TOOLS = [{
+TOOLS: Iterable[ToolParam] = [{
     "name": "bash",
     "description": "Run a shell command.",
     "input_schema": {
@@ -70,7 +72,7 @@ def agent_loop(messages: list):
         results = []
         for block in tool_calls:
             print(f"\033[33m$ {block.input['command']}\033[0m")
-            output = run_bash(block.input["command"])
+            output = run_bash(str(block.input["command"]))
             print(output[:200])
             results.append({
                 "type": "tool_result",
